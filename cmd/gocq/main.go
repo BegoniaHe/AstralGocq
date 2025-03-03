@@ -7,7 +7,9 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+
 	"github.com/ProtocolScience/AstralGo/wrapper"
+	"github.com/getlantern/systray"
 	"github.com/pkg/errors"
 
 	//	"github.com/ProtocolScience/AstralGocq/internal/download"
@@ -20,6 +22,7 @@ import (
 	"github.com/ProtocolScience/AstralGo/client"
 	para "github.com/fumiama/go-hide-param"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+
 	//	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	//	"github.com/tidwall/gjson"
@@ -32,6 +35,7 @@ import (
 	"github.com/ProtocolScience/AstralGocq/global/terminal"
 	"github.com/ProtocolScience/AstralGocq/internal/base"
 	"github.com/ProtocolScience/AstralGocq/internal/cache"
+	"github.com/ProtocolScience/AstralGocq/tray"
 
 	"github.com/ProtocolScience/AstralGocq/internal/selfupdate"
 	"github.com/ProtocolScience/AstralGocq/modules/servers"
@@ -437,6 +441,8 @@ func LoginInteract() {
 	log.Info("资源初始化完成, 开始处理信息.")
 	log.Info("アトリは、高性能ですから!")
 	cli.WaitInit(false)
+
+	systray.Run(tray.OnReady, tray.OnExit)
 }
 
 // WaitSignal 在新线程检查更新和网络并等待信号, 必须在 InitBase, PrepareData, LoginInteract 之后执行
