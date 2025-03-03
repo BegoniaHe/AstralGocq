@@ -13,6 +13,49 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// 日志颜色常量
+const (
+	colorCodePanic = "\x1b[1;31m" // 红色加粗
+	colorCodeFatal = "\x1b[1;31m" // 红色加粗
+	colorCodeError = "\x1b[31m"   // 红色
+	colorCodeWarn  = "\x1b[33m"   // 黄色
+	colorCodeInfo  = "\x1b[37m"   // 白色
+	colorCodeDebug = "\x1b[32m"   // 绿色
+	colorCodeTrace = "\x1b[36m"   // 青色
+	colorReset     = "\x1b[0m"    // 重置颜色
+)
+
+// LogFormat 专用于 go-cqhttp 的日志格式
+type LogFormat struct {
+	EnableColor bool
+}
+
+// Format 实现 logrus.Formatter 接口
+func (f LogFormat) Format(entry *logrus.Entry) ([]byte, error) {
+	buf := NewBuffer()
+	defer PutBuffer(buf)
+
+	if f.EnableColor {
+		buf.WriteString(GetLogLevelColorCode(entry.Level))
+	}
+
+	buf.WriteByte('[')
+	buf.WriteString(entry.Time.Format("2006-01-02 15:04:05"))
+	buf.WriteString("] [")
+	buf.WriteString(strings.ToUpper(entry.Level.String()))
+	buf.WriteString("]: ")
+	buf.WriteString(entry.Message)
+	buf.WriteString(" \n")
+
+	if f.EnableColor {
+		buf.WriteString(colorReset)
+	}
+
+	ret := make([]byte, len(buf.Bytes()))
+	copy(ret, buf.Bytes()) // 复制缓冲区
+	return ret, nil
+}
+
 // LocalHook logrus本地钩子
 type LocalHook struct {
 	lock      *sync.Mutex
@@ -22,7 +65,27 @@ type LocalHook struct {
 	writer    io.Writer        // io
 }
 
-// Levels ref: logrus/hooks.go impl Hook interface
+// NewLocalHook 初始化本地日志钩子实现
+func NewLocalHook(args any, consoleFormatter, fileFormatter logrus.Formatter, levels ...logrus.Level) *LocalHook {
+	hook := &LocalHook{
+		lock:   new(sync.Mutex),
+		levels: levels,
+	}
+	hook.SetFormatter(consoleFormatter, fileFormatter)
+
+	switch arg := args.(type) {
+	case string:
+		hook.SetPath(arg)
+	case io.Writer:
+		hook.SetWriter(arg)
+	default:
+		panic(fmt.Sprintf("不支持的类型: %v", reflect.TypeOf(args)))
+	}
+
+	return hook
+}
+
+// Levels 实现 logrus Hook 接口，返回钩子支持的日志级别
 func (hook *LocalHook) Levels() []logrus.Level {
 	if len(hook.levels) == 0 {
 		return logrus.AllLevels
@@ -30,41 +93,7 @@ func (hook *LocalHook) Levels() []logrus.Level {
 	return hook.levels
 }
 
-func (hook *LocalHook) ioWrite(entry *logrus.Entry) error {
-	log, err := hook.formatter.Format(entry)
-	if err != nil {
-		return err
-	}
-
-	_, err = hook.writer.Write(log)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (hook *LocalHook) pathWrite(entry *logrus.Entry) error {
-	dir := filepath.Dir(hook.path)
-	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return err
-	}
-
-	fd, err := os.OpenFile(hook.path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0o666)
-	if err != nil {
-		return err
-	}
-	defer fd.Close()
-
-	log, err := hook.formatter.Format(entry)
-	if err != nil {
-		return err
-	}
-
-	_, err = fd.Write(log)
-	return err
-}
-
-// Fire ref: logrus/hooks.go impl Hook interface
+// Fire 实现 logrus Hook 接口，处理日志条目
 func (hook *LocalHook) Fire(entry *logrus.Entry) error {
 	hook.lock.Lock()
 	defer hook.lock.Unlock()
@@ -78,6 +107,42 @@ func (hook *LocalHook) Fire(entry *logrus.Entry) error {
 	}
 
 	return nil
+}
+
+// 写入到 io.Writer
+func (hook *LocalHook) ioWrite(entry *logrus.Entry) error {
+	log, err := hook.formatter.Format(entry)
+	if err != nil {
+		return err
+	}
+
+	_, err = hook.writer.Write(log)
+	return err
+}
+
+// 写入到文件
+func (hook *LocalHook) pathWrite(entry *logrus.Entry) error {
+	// 确保目录存在
+	dir := filepath.Dir(hook.path)
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return err
+	}
+
+	// 打开文件
+	fd, err := os.OpenFile(hook.path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0o666)
+	if err != nil {
+		return err
+	}
+	defer fd.Close()
+
+	// 格式化并写入日志
+	log, err := hook.formatter.Format(entry)
+	if err != nil {
+		return err
+	}
+
+	_, err = fd.Write(log)
+	return err
 }
 
 // SetFormatter 设置日志格式
@@ -107,33 +172,12 @@ func (hook *LocalHook) SetPath(path string) {
 	hook.path = path
 }
 
-// NewLocalHook 初始化本地日志钩子实现
-func NewLocalHook(args any, consoleFormatter, fileFormatter logrus.Formatter, levels ...logrus.Level) *LocalHook {
-	hook := &LocalHook{
-		lock: new(sync.Mutex),
-	}
-	hook.SetFormatter(consoleFormatter, fileFormatter)
-	hook.levels = append(hook.levels, levels...)
-
-	switch arg := args.(type) {
-	case string:
-		hook.SetPath(arg)
-	case io.Writer:
-		hook.SetWriter(arg)
-	default:
-		panic(fmt.Sprintf("unsupported type: %v", reflect.TypeOf(args)))
-	}
-
-	return hook
-}
-
 // GetLogLevel 获取日志等级
 //
 // 可能的值有
-//
-// "trace","debug","info","warn","warn","error"
+// "trace", "debug", "info", "warn", "error"
 func GetLogLevel(level string) []logrus.Level {
-	switch level {
+	switch strings.ToLower(level) {
 	case "trace":
 		return []logrus.Level{
 			logrus.TraceLevel, logrus.DebugLevel,
@@ -169,48 +213,6 @@ func GetLogLevel(level string) []logrus.Level {
 	}
 }
 
-// LogFormat specialize for go-cqhttp
-type LogFormat struct {
-	EnableColor bool
-}
-
-// Format implements logrus.Formatter
-func (f LogFormat) Format(entry *logrus.Entry) ([]byte, error) {
-	buf := NewBuffer()
-	defer PutBuffer(buf)
-
-	if f.EnableColor {
-		buf.WriteString(GetLogLevelColorCode(entry.Level))
-	}
-
-	buf.WriteByte('[')
-	buf.WriteString(entry.Time.Format("2006-01-02 15:04:05"))
-	buf.WriteString("] [")
-	buf.WriteString(strings.ToUpper(entry.Level.String()))
-	buf.WriteString("]: ")
-	buf.WriteString(entry.Message)
-	buf.WriteString(" \n")
-
-	if f.EnableColor {
-		buf.WriteString(colorReset)
-	}
-
-	ret := make([]byte, len(buf.Bytes()))
-	copy(ret, buf.Bytes()) // copy buffer
-	return ret, nil
-}
-
-const (
-	colorCodePanic = "\x1b[1;31m" // color.Style{color.Bold, color.Red}.String()
-	colorCodeFatal = "\x1b[1;31m" // color.Style{color.Bold, color.Red}.String()
-	colorCodeError = "\x1b[31m"   // color.Style{color.Red}.String()
-	colorCodeWarn  = "\x1b[33m"   // color.Style{color.Yellow}.String()
-	colorCodeInfo  = "\x1b[37m"   // color.Style{color.White}.String()
-	colorCodeDebug = "\x1b[32m"   // color.Style{color.Green}.String()
-	colorCodeTrace = "\x1b[36m"   // color.Style{color.Cyan}.String()
-	colorReset     = "\x1b[0m"
-)
-
 // GetLogLevelColorCode 获取日志等级对应色彩code
 func GetLogLevelColorCode(level logrus.Level) string {
 	switch level {
@@ -228,7 +230,6 @@ func GetLogLevelColorCode(level logrus.Level) string {
 		return colorCodeDebug
 	case logrus.TraceLevel:
 		return colorCodeTrace
-
 	default:
 		return colorCodeInfo
 	}
