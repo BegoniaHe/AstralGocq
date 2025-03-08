@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/FloatTech/sqlite v1.6.3
 	github.com/Microsoft/go-winio v0.6.2-0.20230724192519-b29bbd58a65a
-	github.com/ProtocolScience/AstralGo v0.0.0-20250302221358-8a89e713a95b
+	github.com/ProtocolScience/AstralGo v0.0.0-20250306135802-cf2d7e3b09ab
 	github.com/RomiChan/protobuf v0.1.1-0.20230204044148-2ed269a2e54d
 	github.com/RomiChan/syncx v0.0.0-20221202055724-5f842c53020e
 	github.com/RomiChan/websocket v1.4.3-0.20220227141055-9b2c6168c9c5
