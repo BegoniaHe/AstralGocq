@@ -13,6 +13,7 @@ require (
 	github.com/fumiama/go-hide-param v0.1.4
 	github.com/getlantern/systray v1.2.2
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/websocket v1.5.3
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-colorable v0.1.13
 	github.com/pkg/errors v0.9.1

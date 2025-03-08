@@ -2,16 +2,12 @@ package gocq
 
 import (
 	"bytes"
+	"context"
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/ProtocolScience/AstralGo/client"
-	"github.com/ProtocolScience/AstralGo/utils"
-	"github.com/ProtocolScience/AstralGocq/server"
-	"github.com/RomiChan/websocket"
-	"github.com/google/uuid"
 	"io"
 	"net"
 	"net/http"
@@ -21,6 +17,12 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/ProtocolScience/AstralGo/client"
+	"github.com/ProtocolScience/AstralGo/utils"
+	"github.com/ProtocolScience/AstralGocq/server"
+	"github.com/RomiChan/websocket"
+	"github.com/google/uuid"
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -99,36 +101,46 @@ func (m *SignServerManager) GetAvailableSignServer() (*config.SignServer, error)
 }
 
 func (m *SignServerManager) asyncCheckServers(servers []config.SignServer) *config.SignServer {
-	var once sync.Once
-	var wg sync.WaitGroup
+	var (
+		wg          sync.WaitGroup
+		mu          sync.Mutex
+		success     bool
+		foundServer *config.SignServer
+	)
 
-	checkServers := func(servers []config.SignServer) bool {
-		success := false
-		wg.Add(len(servers))
-		for i, s := range servers {
-			go func(i int, server config.SignServer) {
-				defer wg.Done()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	for i, s := range servers {
+		wg.Add(1)
+		go func(i int, server config.SignServer) {
+			defer wg.Done()
+			select {
+			case <-ctx.Done():
+				return
+			default:
 				if isServerAvailable(server.URL) {
-					log.Infof("Checking server: %v (%v/%v) ok!", server.URL, i+1, len(servers))
-					m.Set(&server)
-					if m.client.signRegister() {
-						once.Do(func() {
-							log.Infof("Using server url=%v, key=%v, auth=%v", server.URL, server.Key, server.Authorization)
+					mu.Lock()
+					if !success {
+						log.Infof("Checking server: %v (%v/%v) ok!", server.URL, i+1, len(servers))
+						m.Set(&server)
+						if m.client.signRegister() {
 							success = true
-						})
+							foundServer = &server
+							log.Infof("Using server url=%v, key=%v, auth=%v", server.URL, server.Key, server.Authorization)
+							cancel()
+						}
 					}
+					mu.Unlock()
 				} else {
 					log.Warnf("Checking server: %v (%v/%v) failed!", server.URL, i+1, len(servers))
 				}
-			}(i, s)
-		}
-		wg.Wait()
-		return success
+			}
+		}(i, s)
 	}
 
-	checkServers(servers)
-
-	return m.Get()
+	wg.Wait()
+	return foundServer
 }
 
 func isServerAvailable(signServer string) bool {
