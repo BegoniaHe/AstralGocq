@@ -3,21 +3,14 @@ package gocq
 import (
 	"bufio"
 	"bytes"
-	"encoding/base64"
-	"encoding/json"
-	"fmt"
 	"image"
 	"image/png"
-	"io"
-	"net"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/ProtocolScience/AstralGo/client"
-	"github.com/gorilla/websocket"
 	"github.com/mattn/go-colorable"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -282,180 +275,7 @@ func loginResponseProcessor(res *client.LoginResponse) error {
 }
 
 func getTicket(u string) string {
-	ticket := ""
-	req := fmt.Sprintf("wss://gt-manual.xingdream.top/captcha/slider?key=%d", cli.Uin)
-
-	log.Infof("尝试连接 WebSocket: %s", req)
-
-	// 建立 WebSocket 连接
-	dialer := websocket.DefaultDialer
-	dialer.HandshakeTimeout = httpTimeout
-
-	conn, _, err := dialer.Dial(req, nil)
-	if err != nil {
-		log.Errorf("WebSocket 连接失败: %v", err)
-		log.Warn("请访问以下 URL 手动完成验证:")
-		log.Warn(u)
-		return readLine()
-	}
-	defer conn.Close()
-
-	// 发送注册请求
-	registerData := map[string]interface{}{
-		"type":    "register",
-		"payload": map[string]string{"url": u},
-	}
-
-	if err := conn.WriteJSON(registerData); err != nil {
-		log.Errorf("发送 WebSocket 注册消息失败: %v", err)
-		log.Warn("请访问以下 URL 手动完成验证:")
-		log.Warn(u)
-		return readLine()
-	}
-
-	log.Infof("\n----请打开下方链接并在2分钟内进行验证----\n%s\n----完成后将自动进行登录----",
-		strings.Replace(req, "wss://", "https://", 1))
-
-	// 创建HTTP客户端，仅使用IPv4
-	httpClient := &http.Client{
-		Timeout: httpTimeout,
-		Transport: &http.Transport{
-			DialContext: (&net.Dialer{
-				Timeout:   httpTimeout,
-				KeepAlive: httpTimeout,
-				DualStack: false, // 强制使用 IPv4
-			}).DialContext,
-		},
-	}
-
-	// 监听 WebSocket 消息
-	done := make(chan struct{})
-	errorOccurred := make(chan struct{})
-
-	go func() {
-		defer close(done)
-
-		// 设置读取超时
-		_ = conn.SetReadDeadline(time.Now().Add(wsTimeout))
-
-		for {
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				log.Warnf("WebSocket 读取错误: %v", err)
-				close(errorOccurred)
-				return
-			}
-
-			var data map[string]interface{}
-			if err := json.Unmarshal(message, &data); err != nil {
-				log.Warnf("解析 WebSocket 消息失败: %v", err)
-				continue
-			}
-
-			msgType, ok := data["type"].(string)
-			if !ok {
-				continue
-			}
-
-			switch msgType {
-			case "ticket":
-				if payload, ok := data["payload"].(map[string]interface{}); ok {
-					if ticketStr, ok := payload["ticket"].(string); ok && ticketStr != "" {
-						ticket = ticketStr
-						log.Infof("获取 Ticket 成功: %s", ticket)
-						return
-					}
-				}
-
-			case "handle":
-				if payload, ok := data["payload"].(map[string]interface{}); ok {
-					url, urlOk := payload["url"].(string)
-					method, methodOk := payload["method"].(string)
-
-					if !urlOk || url == "" {
-						log.Warnf("无效的URL")
-						continue
-					}
-
-					if !methodOk || method == "" {
-						method = "GET"
-					}
-
-					var body io.Reader
-					if method != "GET" { // 仅非 GET 请求才附带 body
-						if b, ok := payload["body"].(string); ok && len(b) > 0 {
-							body = strings.NewReader(b)
-						}
-					}
-
-					// 创建请求
-					req, err := http.NewRequest(method, url, body)
-					if err != nil {
-						log.Warnf("构造请求失败: %v", err)
-						continue
-					}
-
-					// 添加请求头
-					if headers, ok := payload["headers"].(map[string]interface{}); ok {
-						for k, v := range headers {
-							if strVal, ok := v.(string); ok {
-								req.Header.Set(k, strVal)
-							}
-						}
-					}
-
-					// 发送请求
-					rsp, err := httpClient.Do(req)
-					if err != nil {
-						log.Warnf("发送请求失败: %v", err)
-						continue
-					}
-
-					// 确保响应体关闭
-					responseData, err := func(rsp *http.Response) ([]byte, error) {
-						defer rsp.Body.Close()
-						return io.ReadAll(rsp.Body)
-					}(rsp)
-
-					if err != nil {
-						log.Warnf("读取响应失败: %v", err)
-						continue
-					}
-
-					// 返回结果
-					payload["result"] = base64.StdEncoding.EncodeToString(responseData)
-
-					// 转换响应头为可序列化格式
-					headers := make(map[string][]string)
-					for k, v := range rsp.Header {
-						headers[k] = v
-					}
-					payload["response_headers"] = headers
-
-					if err := conn.WriteJSON(data); err != nil {
-						log.Warnf("发送处理结果失败: %v", err)
-					}
-				}
-			}
-		}
-	}()
-
-	// 等待 ticket 或超时
-	select {
-	case <-done:
-		// 已经获取到ticket
-	case <-errorOccurred:
-		log.Warn("验证失败，请手动完成验证")
-		log.Warn("请访问以下 URL 手动完成验证:")
-		log.Warn(u)
-		ticket = readLine()
-	case <-time.After(wsTimeout):
-		log.Warn("获取 Ticket 超时，请手动完成验证")
-		log.Warn("请访问以下 URL 手动完成验证:")
-		log.Warn(u)
-		ticket = readLine()
-	}
-
-	// 连接已经在defer中关闭
-	return ticket
+	log.Warnf("请前往该地址验证 -> %v ", u)
+	log.Warn("请输入ticket： (Enter 提交)")
+	return readLine()
 }
