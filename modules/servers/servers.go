@@ -4,8 +4,8 @@ package servers
 import (
 	"gopkg.in/yaml.v3"
 
-	"github.com/ProtocolScience/AstralGocq/coolq"
-	"github.com/ProtocolScience/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/coolq"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
 )
 
 var (

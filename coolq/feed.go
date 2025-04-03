@@ -3,7 +3,7 @@ package coolq
 import (
 	"github.com/ProtocolScience/AstralGo/topic"
 
-	"github.com/ProtocolScience/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/global"
 )
 
 // FeedContentsToArrayMessage 将话题频道帖子内容转换为 Array Message

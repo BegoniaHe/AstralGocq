@@ -18,9 +18,9 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/BegoniaHe/AstralGocq/server"
 	"github.com/ProtocolScience/AstralGo/client"
 	"github.com/ProtocolScience/AstralGo/utils"
-	"github.com/ProtocolScience/AstralGocq/server"
 	"github.com/RomiChan/websocket"
 	"github.com/google/uuid"
 
@@ -28,9 +28,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 
-	"github.com/ProtocolScience/AstralGocq/internal/base"
-	"github.com/ProtocolScience/AstralGocq/internal/download"
-	"github.com/ProtocolScience/AstralGocq/modules/config"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/download"
+	"github.com/BegoniaHe/AstralGocq/modules/config"
 )
 
 // SignServerManager manages the current sign server and handles server selection.

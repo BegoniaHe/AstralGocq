@@ -10,7 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/ProtocolScience/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
 )
 
 // GetSilkFileDuration 读 Silk 文件的真实音频时间长度

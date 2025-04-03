@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"hash/crc32"
 
-	"github.com/ProtocolScience/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/global"
 )
 
 type (

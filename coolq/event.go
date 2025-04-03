@@ -4,17 +4,18 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
+
 	"github.com/ProtocolScience/AstralGo/client"
 	"github.com/ProtocolScience/AstralGo/client/pb/database"
 	"github.com/ProtocolScience/AstralGo/message"
 	log "github.com/sirupsen/logrus"
-	"net/url"
-	"strconv"
 
-	"github.com/ProtocolScience/AstralGocq/db"
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/internal/base"
-	"github.com/ProtocolScience/AstralGocq/internal/cache"
+	"github.com/BegoniaHe/AstralGocq/db"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/cache"
 )
 
 // ToFormattedMessage 将给定[]message.IMessageElement转换为通过coolq.SetMessageFormat所定义的消息上报格式

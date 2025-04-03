@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ProtocolScience/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
 )
 
 const limit = 4 * 1024

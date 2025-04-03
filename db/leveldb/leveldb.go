@@ -10,7 +10,7 @@ import (
 	"github.com/syndtr/goleveldb/leveldb/opt"
 	"gopkg.in/yaml.v3"
 
-	"github.com/ProtocolScience/AstralGocq/db"
+	"github.com/BegoniaHe/AstralGocq/db"
 )
 
 type database struct {

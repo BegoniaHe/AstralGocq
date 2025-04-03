@@ -1,6 +1,6 @@
 package leveldb
 
-import "github.com/ProtocolScience/AstralGocq/db"
+import "github.com/BegoniaHe/AstralGocq/db"
 
 func (w *writer) writeStoredGroupMessage(x *db.StoredGroupMessage) {
 	if x == nil {

@@ -16,7 +16,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.ilharper.com/x/isatty"
 
-	"github.com/ProtocolScience/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/global"
 )
 
 const (

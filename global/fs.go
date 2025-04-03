@@ -17,7 +17,7 @@ import (
 	"github.com/segmentio/asm/base64"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ProtocolScience/AstralGocq/internal/download"
+	"github.com/BegoniaHe/AstralGocq/internal/download"
 )
 
 const (

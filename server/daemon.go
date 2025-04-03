@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ProtocolScience/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/global"
 
 	log "github.com/sirupsen/logrus"
 )

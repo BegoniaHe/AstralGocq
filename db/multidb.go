@@ -4,7 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 
-	"github.com/ProtocolScience/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
 )
 
 // backends 多数据库支持， 后端支持

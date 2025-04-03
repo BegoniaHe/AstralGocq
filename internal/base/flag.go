@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 
-	"github.com/ProtocolScience/AstralGocq/modules/config"
+	"github.com/BegoniaHe/AstralGocq/modules/config"
 )
 
 // command flags

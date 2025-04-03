@@ -24,15 +24,15 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 
-	"github.com/ProtocolScience/AstralGocq/db"
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/internal/base"
-	"github.com/ProtocolScience/AstralGocq/internal/cache"
-	"github.com/ProtocolScience/AstralGocq/internal/download"
-	"github.com/ProtocolScience/AstralGocq/internal/msg"
-	"github.com/ProtocolScience/AstralGocq/internal/param"
-	"github.com/ProtocolScience/AstralGocq/modules/filter"
-	"github.com/ProtocolScience/AstralGocq/pkg/onebot"
+	"github.com/BegoniaHe/AstralGocq/db"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/cache"
+	"github.com/BegoniaHe/AstralGocq/internal/download"
+	"github.com/BegoniaHe/AstralGocq/internal/msg"
+	"github.com/BegoniaHe/AstralGocq/internal/param"
+	"github.com/BegoniaHe/AstralGocq/modules/filter"
+	"github.com/BegoniaHe/AstralGocq/pkg/onebot"
 )
 
 type guildMemberPageToken struct {

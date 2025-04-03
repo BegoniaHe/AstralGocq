@@ -6,8 +6,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/ProtocolScience/AstralGo/client/nt"
-	"github.com/ProtocolScience/AstralGo/client/pb/database"
 	"io"
 	"math/rand"
 	"net/url"
@@ -18,6 +16,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ProtocolScience/AstralGo/client/nt"
+	"github.com/ProtocolScience/AstralGo/client/pb/database"
+
 	"github.com/ProtocolScience/AstralGo/message"
 	"github.com/ProtocolScience/AstralGo/utils"
 	b14 "github.com/fumiama/go-base16384"
@@ -25,15 +26,15 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 
-	"github.com/ProtocolScience/AstralGocq/db"
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/internal/base"
-	"github.com/ProtocolScience/AstralGocq/internal/cache"
-	"github.com/ProtocolScience/AstralGocq/internal/download"
-	"github.com/ProtocolScience/AstralGocq/internal/mime"
-	"github.com/ProtocolScience/AstralGocq/internal/msg"
-	"github.com/ProtocolScience/AstralGocq/internal/param"
-	"github.com/ProtocolScience/AstralGocq/pkg/onebot"
+	"github.com/BegoniaHe/AstralGocq/db"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/cache"
+	"github.com/BegoniaHe/AstralGocq/internal/download"
+	"github.com/BegoniaHe/AstralGocq/internal/mime"
+	"github.com/BegoniaHe/AstralGocq/internal/msg"
+	"github.com/BegoniaHe/AstralGocq/internal/param"
+	"github.com/BegoniaHe/AstralGocq/pkg/onebot"
 )
 
 // TODO: move this file to internal/msg, internal/onebot

@@ -2,7 +2,7 @@
 package silk
 
 import (
-	"github.com/ProtocolScience/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
 )
 
 func init() {

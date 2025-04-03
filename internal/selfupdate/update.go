@@ -16,9 +16,9 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/internal/base"
-	"github.com/ProtocolScience/AstralGocq/internal/download"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/download"
 )
 
 func readLine() (str string) {
@@ -49,7 +49,7 @@ func CheckUpdate() {
 		return
 	}
 	if global.VersionNameCompare(base.Version, latest) {
-		logrus.Infof("当前有更新的 go-cqhttp 可供更新, 请前往 https://github.com/ProtocolScience/AstralGocq/releases 下载.")
+		logrus.Infof("当前有更新的 go-cqhttp 可供更新, 请前往 https://github.com/BegoniaHe/AstralGocq/releases 下载.")
 		logrus.Infof("当前版本: %v 最新版本: %v", base.Version, latest)
 		return
 	}

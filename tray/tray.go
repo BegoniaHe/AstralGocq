@@ -4,7 +4,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/ProtocolScience/AstralGocq/icon"
+	"github.com/BegoniaHe/AstralGocq/icon"
 	"github.com/getlantern/systray"
 )
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ProtocolScience/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
 )
 
 // SetTitle 设置标题为 go-cqhttp `版本` `版权`

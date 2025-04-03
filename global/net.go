@@ -5,7 +5,7 @@ import (
 
 	"github.com/tidwall/gjson"
 
-	"github.com/ProtocolScience/AstralGocq/internal/download"
+	"github.com/BegoniaHe/AstralGocq/internal/download"
 )
 
 // QQMusicSongInfo 通过给定id在QQ音乐上查找曲目信息

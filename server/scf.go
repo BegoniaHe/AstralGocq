@@ -15,10 +15,10 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 
-	"github.com/ProtocolScience/AstralGocq/coolq"
-	"github.com/ProtocolScience/AstralGocq/global"
-	api2 "github.com/ProtocolScience/AstralGocq/modules/api"
-	"github.com/ProtocolScience/AstralGocq/modules/config"
+	"github.com/BegoniaHe/AstralGocq/coolq"
+	"github.com/BegoniaHe/AstralGocq/global"
+	api2 "github.com/BegoniaHe/AstralGocq/modules/api"
+	"github.com/BegoniaHe/AstralGocq/modules/config"
 )
 
 type lambdaClient struct {

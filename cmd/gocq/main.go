@@ -12,7 +12,7 @@ import (
 	"github.com/getlantern/systray"
 	"github.com/pkg/errors"
 
-	//	"github.com/ProtocolScience/AstralGocq/internal/download"
+	//	"github.com/BegoniaHe/AstralGocq/internal/download"
 	"os"
 	"path"
 	"sync"
@@ -29,17 +29,17 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/term"
 
-	"github.com/ProtocolScience/AstralGocq/coolq"
-	"github.com/ProtocolScience/AstralGocq/db"
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/global/terminal"
-	"github.com/ProtocolScience/AstralGocq/internal/base"
-	"github.com/ProtocolScience/AstralGocq/internal/cache"
-	"github.com/ProtocolScience/AstralGocq/tray"
+	"github.com/BegoniaHe/AstralGocq/coolq"
+	"github.com/BegoniaHe/AstralGocq/db"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/global/terminal"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/cache"
+	"github.com/BegoniaHe/AstralGocq/tray"
 
-	"github.com/ProtocolScience/AstralGocq/internal/selfupdate"
-	"github.com/ProtocolScience/AstralGocq/modules/servers"
-	"github.com/ProtocolScience/AstralGocq/server"
+	"github.com/BegoniaHe/AstralGocq/internal/selfupdate"
+	"github.com/BegoniaHe/AstralGocq/modules/servers"
+	"github.com/BegoniaHe/AstralGocq/server"
 )
 
 // 允许通过配置文件设置的状态列表

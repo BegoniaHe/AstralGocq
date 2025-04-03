@@ -8,7 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/ProtocolScience/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/global"
 )
 
 type intReader struct {

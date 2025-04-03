@@ -9,7 +9,7 @@ import (
 	"github.com/ProtocolScience/AstralGo/topic"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ProtocolScience/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/global"
 )
 
 func convertGroupMemberInfo(groupID int64, m *client.GroupMemberInfo) global.MSG {

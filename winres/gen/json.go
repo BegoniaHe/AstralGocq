@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ProtocolScience/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
 )
 
 const js = `{
@@ -58,7 +58,7 @@ const js = `{
           "0409": {
             "Comments": "Golang implementation of cqhttp.",
             "CompanyName": "Mrs4s",
-            "FileDescription": "https://github.com/ProtocolScience/AstralGocq",
+            "FileDescription": "https://github.com/BegoniaHe/AstralGocq",
             "FileVersion": "%s",
             "InternalName": "",
             "LegalCopyright": "©️ 2020 - %d Mrs4s. All Rights Reserved.",

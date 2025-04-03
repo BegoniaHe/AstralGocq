@@ -3,9 +3,9 @@
 package api
 
 import (
-	"github.com/ProtocolScience/AstralGocq/coolq"
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/pkg/onebot"
+	"github.com/BegoniaHe/AstralGocq/coolq"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/pkg/onebot"
 )
 
 func (c *Caller) call(action string, spec *onebot.Spec, p Getter) global.MSG {

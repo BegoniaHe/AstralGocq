@@ -20,12 +20,12 @@ import (
 	"github.com/tidwall/gjson"
 	"gopkg.in/yaml.v3"
 
-	"github.com/ProtocolScience/AstralGocq/coolq"
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/modules/api"
-	"github.com/ProtocolScience/AstralGocq/modules/config"
-	"github.com/ProtocolScience/AstralGocq/modules/filter"
-	"github.com/ProtocolScience/AstralGocq/pkg/onebot"
+	"github.com/BegoniaHe/AstralGocq/coolq"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/modules/api"
+	"github.com/BegoniaHe/AstralGocq/modules/config"
+	"github.com/BegoniaHe/AstralGocq/modules/filter"
+	"github.com/BegoniaHe/AstralGocq/pkg/onebot"
 )
 
 type webSocketServer struct {

@@ -17,7 +17,7 @@ import (
 	"github.com/ProtocolScience/AstralGo/binary"
 	"github.com/ProtocolScience/AstralGo/utils"
 
-	"github.com/ProtocolScience/AstralGocq/db"
+	"github.com/BegoniaHe/AstralGocq/db"
 )
 
 type database struct {

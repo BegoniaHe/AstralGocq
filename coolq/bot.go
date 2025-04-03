@@ -22,12 +22,12 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/image/webp"
 
-	"github.com/ProtocolScience/AstralGocq/db"
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/internal/base"
-	"github.com/ProtocolScience/AstralGocq/internal/mime"
-	"github.com/ProtocolScience/AstralGocq/internal/msg"
-	"github.com/ProtocolScience/AstralGocq/pkg/onebot"
+	"github.com/BegoniaHe/AstralGocq/db"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/mime"
+	"github.com/BegoniaHe/AstralGocq/internal/msg"
+	"github.com/BegoniaHe/AstralGocq/pkg/onebot"
 )
 
 // CQBot CQBot结构体,存储Bot实例相关配置

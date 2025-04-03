@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ProtocolScience/AstralGocq/coolq"
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/modules/api"
-	"github.com/ProtocolScience/AstralGocq/pkg/onebot"
+	"github.com/BegoniaHe/AstralGocq/coolq"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/modules/api"
+	"github.com/BegoniaHe/AstralGocq/pkg/onebot"
 
 	"golang.org/x/time/rate"
 )

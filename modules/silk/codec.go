@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/wdvxdr1123/go-silk"
 
-	"github.com/ProtocolScience/AstralGocq/internal/base"
+	"github.com/BegoniaHe/AstralGocq/internal/base"
 )
 
 const silkCachePath = "data/cache"

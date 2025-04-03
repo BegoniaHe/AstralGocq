@@ -3,7 +3,7 @@ package leveldb
 import (
 	"bytes"
 
-	"github.com/ProtocolScience/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/global"
 )
 
 type intWriter struct {

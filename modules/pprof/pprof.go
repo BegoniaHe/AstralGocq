@@ -11,9 +11,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 
-	"github.com/ProtocolScience/AstralGocq/coolq"
-	"github.com/ProtocolScience/AstralGocq/modules/config"
-	"github.com/ProtocolScience/AstralGocq/modules/servers"
+	"github.com/BegoniaHe/AstralGocq/coolq"
+	"github.com/BegoniaHe/AstralGocq/modules/config"
+	"github.com/BegoniaHe/AstralGocq/modules/servers"
 )
 
 const pprofDefault = `  # pprof 性能分析服务器, 一般情况下不需要启用.

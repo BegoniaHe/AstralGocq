@@ -1,7 +1,7 @@
 // Package server 包含HTTP,WebSocket,反向WebSocket请求处理的相关函数与结构体
 package server
 
-import "github.com/ProtocolScience/AstralGocq/modules/servers"
+import "github.com/BegoniaHe/AstralGocq/modules/servers"
 
 // 注册
 func init() {

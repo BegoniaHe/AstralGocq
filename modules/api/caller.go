@@ -4,9 +4,9 @@ package api
 import (
 	"github.com/tidwall/gjson"
 
-	"github.com/ProtocolScience/AstralGocq/coolq"
-	"github.com/ProtocolScience/AstralGocq/global"
-	"github.com/ProtocolScience/AstralGocq/pkg/onebot"
+	"github.com/BegoniaHe/AstralGocq/coolq"
+	"github.com/BegoniaHe/AstralGocq/global"
+	"github.com/BegoniaHe/AstralGocq/pkg/onebot"
 )
 
 //go:generate go run ./../../cmd/api-generator -pkg api -path=./../../coolq/api.go,./../../coolq/api_v12.go -o api.go
