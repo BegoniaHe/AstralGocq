@@ -940,13 +940,8 @@ func (bot *CQBot) makeImageOrVideoElem(elem msg.Element, sourceType message.Sour
 			u = f
 		}
 	}
-	if u != "" {
-		var hash [16]byte
-		if f == "" {
-			hash = md5.Sum([]byte(u))
-		} else {
-			hash = md5.Sum([]byte(f))
-		}
+	if u != "" && f == "" {
+		hash := md5.Sum([]byte(u))
 		cacheFile := path.Join(global.CachePath, hex.EncodeToString(hash[:])+".cache")
 		maxSize := int64(maxImageSize)
 		if video {

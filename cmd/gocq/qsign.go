@@ -38,6 +38,7 @@ type SignServerManager struct {
 	current  atomic.Pointer[config.SignServer]
 	errCount atomic.Uintptr
 	client   *SignClient
+	mu       sync.Mutex
 }
 
 // NewSignServerManager creates a new SignServerManager instance.
@@ -101,46 +102,90 @@ func (m *SignServerManager) GetAvailableSignServer() (*config.SignServer, error)
 }
 
 func (m *SignServerManager) asyncCheckServers(servers []config.SignServer) *config.SignServer {
-	var (
-		wg          sync.WaitGroup
-		mu          sync.Mutex
-		success     bool
-		foundServer *config.SignServer
-	)
-
+	var once sync.Once
+	var wg sync.WaitGroup
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	for i, s := range servers {
-		wg.Add(1)
-		go func(i int, server config.SignServer) {
-			defer wg.Done()
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				if isServerAvailable(server.URL) {
-					mu.Lock()
-					if !success {
-						log.Infof("Checking server: %v (%v/%v) ok!", server.URL, i+1, len(servers))
-						m.Set(&server)
-						if m.client.signRegister() {
-							success = true
-							foundServer = &server
-							log.Infof("Using server url=%v, key=%v, auth=%v", server.URL, server.Key, server.Authorization)
-							cancel()
-						}
-					}
-					mu.Unlock()
-				} else {
-					log.Warnf("Checking server: %v (%v/%v) failed!", server.URL, i+1, len(servers))
+	checkServers := func(servers []config.SignServer) bool {
+		success := atomic.Bool{}
+		wg.Add(len(servers))
+
+		for i, s := range servers {
+			go func(i int, server config.SignServer) {
+				defer wg.Done()
+
+				// 提前检查上下文取消状态
+				select {
+				case <-ctx.Done():
+					return
+				default:
 				}
-			}
-		}(i, s)
+
+				// 带超时的服务器可用性检查
+				available := m.checkAvailabilityWithTimeout(ctx, server.URL, 5*time.Second)
+				if !available {
+					log.Warnf("Checking server: %v (%v/%v) failed!", server.URL, i+1, len(servers))
+					return
+				}
+
+				log.Infof("Checking server: %v (%v/%v) ok!", server.URL, i+1, len(servers))
+
+				// 带超时的注册操作
+				if m.tryRegisterWithTimeout(ctx, &server, 5*time.Second) {
+					once.Do(func() {
+						log.Infof("Using server url=%v, key=%v, auth=%v",
+							server.URL, server.Key, server.Authorization)
+						success.Store(true)
+						cancel() // 成功时取消其他goroutine
+					})
+				}
+			}(i, s)
+		}
+
+		wg.Wait()
+		return success.Load()
 	}
 
-	wg.Wait()
-	return foundServer
+	checkServers(servers)
+
+	return m.Get()
+}
+
+// 带超时的服务器可用性检查
+func (m *SignServerManager) checkAvailabilityWithTimeout(ctx context.Context, url string, timeout time.Duration) bool {
+	result := make(chan bool, 1)
+	go func() { result <- isServerAvailable(url) }()
+
+	select {
+	case res := <-result:
+		return res
+	case <-time.After(timeout):
+		return false
+	case <-ctx.Done():
+		return false
+	}
+}
+
+// 带超时的注册尝试
+func (m *SignServerManager) tryRegisterWithTimeout(ctx context.Context, server *config.SignServer, timeout time.Duration) bool {
+	// 使用互斥锁保证对共享资源的并发安全访问
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.Set(server)
+
+	result := make(chan bool, 1)
+	go func() { result <- m.client.signRegister() }()
+
+	select {
+	case res := <-result:
+		return res
+	case <-time.After(timeout):
+		return false
+	case <-ctx.Done():
+		return false
+	}
 }
 
 func isServerAvailable(signServer string) bool {
@@ -231,7 +276,7 @@ func (c *SignClient) requestSignServer(action string, data map[string]string) (s
 			c.manager.IncrementErrorCount()
 			signServer = &base.SignServers[0]
 		}
-		data["key"] = signServer.Key
+		data["auth"] = signServer.Key
 		data["uin"] = strconv.FormatInt(base.Account.Uin, 10)
 
 		data["qua"] = device.Protocol.Version().QUA
